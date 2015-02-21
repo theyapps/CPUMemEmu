@@ -331,7 +331,7 @@ int main(int argc, char* argv[]){
         case 16: // Copy the value in the AC to Y
         reg[Y] = reg[AC];
         break;
-
+ 
         case 17: // Copy the value in Y to the AC
         reg[AC] = reg[Y];
         break;
