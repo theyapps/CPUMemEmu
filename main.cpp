@@ -318,36 +318,6 @@ int main(int argc, char* argv[]){
 
         case 13: // Subtract the value in Y from the AC
         reg[AC] -= reg[Y];
-        case 12: // Subtract the value in X from the AC
-        reg[AC] -= reg[X];
-        break;
-
-        case 13: // Subtract the value in Y from the AC
-        reg[AC] -= reg[Y];
-        break;
-
-        case 14: // Copy the value in the AC to X
-        reg[X] = reg[AC];
-        break;
-
-        case 14: // Copy the value in the AC to X
-        reg[X] = reg[AC];
-        case 12: // Subtract the value in X from the AC
-        reg[AC] -= reg[X];
-        break;
-
-        case 13: // Subtract the value in Y from the AC
-        reg[AC] -= reg[Y];
-        break;
-
-        case 14: // Copy the value in the AC to X
-        reg[X] = reg[AC];
-        case 12: // Subtract the value in X from the AC
-        reg[AC] -= reg[X];
-        break;
-
-        case 13: // Subtract the value in Y from the AC
-        reg[AC] -= reg[Y];
         break;
 
         case 14: // Copy the value in the AC to X
