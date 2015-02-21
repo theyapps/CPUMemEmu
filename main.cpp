@@ -169,14 +169,16 @@ int main(int argc, char* argv[]){
 
     case 0: // Child (Memory)
 
-    memset(memory, 0, sizeof(memory));
+    // Clear memory block, mostly for my sanity
+    // Disable for production
+    // memset(memory, 0, sizeof(memory));
 
     // Close streams that belong to parent
     close(CPU2Mem[WRITE]);
     close(Mem2CPU[READ]);
 
     // Act like memory...
-    do{
+    do {
       memset(buf, 0, BUF_S);
       read(CPU2Mem[READ], buf, 2);
       f = atoi(buf);
@@ -199,7 +201,6 @@ int main(int argc, char* argv[]){
         break;
 
         case MEM_WRITE:
-
         memset(buf, 0, BUF_S);
         read(CPU2Mem[READ], buf, 4);
         address = atoi(buf);
@@ -211,14 +212,9 @@ int main(int argc, char* argv[]){
         if(address >= 0 && address < MEM_S){
           memory[address] = value;
         }
-
-        //cout << "MemWrite: " << address << ", " << value << endl;
-
-
         break;
 
         case MEM_EXIT:
-        //cout << "Mem exit" << endl;
         break;
       }
 
@@ -246,16 +242,12 @@ int main(int argc, char* argv[]){
     insCnt = 1;
     while(reg[IR] != 50){
 
-      //cout << " [" << insCnt << "] ";
-
       if(insCnt++ % timerInterval == 0 && reg[PC] < 1000){
-
-        execMode = SYS;
-        write(MEM_S - 1, reg[SP]);
-        reg[SP] = MEM_S - 1;
-        write(--reg[SP],reg[PC]);
-        reg[PC] = 1000;
-
+        execMode = SYS;               // Set system mode
+        write(MEM_S - 1, reg[SP]);    // Push usr stack pointer to system stack
+        reg[SP] = MEM_S - 1;          // Set system stack pointer
+        write(--reg[SP],reg[PC]);     // Push usr PC to sys stack
+        reg[PC] = 1000;               // Set sys PC
       }
 
 
@@ -320,6 +312,36 @@ int main(int argc, char* argv[]){
         reg[AC] += reg[Y];
         break;
 
+        case 12: // Subtract the value in X from the AC
+        reg[AC] -= reg[X];
+        break;
+
+        case 13: // Subtract the value in Y from the AC
+        reg[AC] -= reg[Y];
+        case 12: // Subtract the value in X from the AC
+        reg[AC] -= reg[X];
+        break;
+
+        case 13: // Subtract the value in Y from the AC
+        reg[AC] -= reg[Y];
+        break;
+
+        case 14: // Copy the value in the AC to X
+        reg[X] = reg[AC];
+        break;
+
+        case 14: // Copy the value in the AC to X
+        reg[X] = reg[AC];
+        case 12: // Subtract the value in X from the AC
+        reg[AC] -= reg[X];
+        break;
+
+        case 13: // Subtract the value in Y from the AC
+        reg[AC] -= reg[Y];
+        break;
+
+        case 14: // Copy the value in the AC to X
+        reg[X] = reg[AC];
         case 12: // Subtract the value in X from the AC
         reg[AC] -= reg[X];
         break;
@@ -400,11 +422,11 @@ int main(int argc, char* argv[]){
         break;
 
         case 29: // Set system mode, switch stack, push SP and PC, set new SP and PC
-        execMode = SYS;
-        write(MEM_S - 1, reg[SP]);
-        reg[SP] = MEM_S - 1;
-        write(--reg[SP],reg[PC]);
-        reg[PC] = 1500;
+        execMode = SYS;             // Set sys mode
+        write(MEM_S - 1, reg[SP]);  // Push usr SP to sys stack
+        reg[SP] = MEM_S - 1;        // Set sys SP
+        write(--reg[SP],reg[PC]);   // Push usr PC to sys syack
+        reg[PC] = 1500;             // Set sys PC
         break;
 
         case 30: // Restore registers, set user mode
@@ -421,6 +443,7 @@ int main(int argc, char* argv[]){
       }
     }
 
+    // Tell mem process to exit then exit.
     memset(buf, 0, BUF_S);
     sprintf(buf,"%02d%04d%04d", MEM_EXIT, 0, 0);
     write(CPU2Mem[WRITE], buf, BUF_S);
